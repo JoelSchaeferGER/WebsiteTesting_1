@@ -123,7 +123,7 @@ letters[11].setOffset(-75,0);
 	if(random(1)>0.5){
 	Particles[i].setNoiseMult(0.3);
 } else {
-	Particles[i].setNoiseMult(-0.3);
+	Particles[i].setNoiseMult(0.3);
 
 	}
 }
@@ -179,7 +179,6 @@ function draw() {
  	let mouseV = createVector(mouseX,mouseY);
 	updatePortal();
 	//displayPortal();
-
 // if (frameCount*10 <= 1000){
 // scale(eas.bounceIn(frameCount*10/1000));
 // } else {
@@ -194,7 +193,7 @@ angleMode(RADIANS);
 		Particles[i].update(Particles);
 		if(!onScreen(Particles[i].getPosition())){
 		//
-	  Particles[i].setNoiseMult(Particles[i].getNoiseMult()*-1);		
+	  Particles[i].setNoiseMult(Particles[i].getNoiseMult()*1);		
 		
 		Particles[i].setPosition(createVector(random(windowWidth),random(windowHeight)));		
 		}
@@ -224,7 +223,7 @@ angleMode(DEGREES);
 //circle(dummyCircles[i].x,dummyCircles[i].y,30);
 push();
 	
-	letters[i].setStrokeColor(300-constrain(dummyCircles[i].dist(mouseV),0,300)+50);
+	letters[i].setStrokeColor(300-constrain(dummyCircles[i].dist(mouseV),0,300)+125);
 	letters[i].checkDistance2Actor(mouseX,mouseY);
 	letters[i].visualize();
 pop();
@@ -281,8 +280,8 @@ function hoverOverName() {
 }
 
 
-
 function mousePressed(){
+	
 	newNoiseSeed();
 }
 
