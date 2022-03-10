@@ -5,9 +5,9 @@ class Particle extends Objective{
 	
     this.vel = createVector(0,0);
     this.acc = createVector(0,0);
-    this.maxForce = 0.5;
-    this.maxSpeed = 1;
-    this.noiseScale = 0.01; 
+    this.maxForce = 0.3;
+    this.maxSpeed = 0.5;
+    this.noiseScale = 0.02; 
     this.noiseMult = 1; 
     
 }

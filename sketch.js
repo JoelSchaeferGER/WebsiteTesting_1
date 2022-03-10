@@ -121,9 +121,9 @@ letters[11].setOffset(-75,0);
 	Particles[i] = new Particle();
 	Particles[i].setPosition(createVector(random(windowWidth),random(windowHeight)));
 	if(random(1)>0.5){
-	Particles[i].setNoiseMult(0.3);
+	Particles[i].setNoiseMult(1);
 } else {
-	Particles[i].setNoiseMult(0.3);
+	Particles[i].setNoiseMult(-1);
 
 	}
 }
@@ -189,7 +189,7 @@ push();
 angleMode(RADIANS);
 
 	for(let i = 0; i<num;i++){
-		stroke(550-dist(Particles[i].getPosition().x,Particles[i].getPosition().y,mouseV.x,mouseV.y));
+		stroke(650-dist(Particles[i].getPosition().x,Particles[i].getPosition().y,mouseV.x,mouseV.y));
 		Particles[i].update(Particles);
 		if(!onScreen(Particles[i].getPosition())){
 		//
@@ -203,7 +203,7 @@ angleMode(RADIANS);
       	// let dis = Particles[i].getPosition().dist(element.getPosition()); 
       	//// - this works somehow:
       		let dis = dist(Particles[i].getPosition().x,Particles[i].getPosition().y,element.getPosition().x,element.getPosition().y); 
-      		if(dis>20 && dis<75) {      			
+      		if(dis>20 && dis<105) {      			
 					stroke(225-mouseV.dist(Particles[i].getPosition()));
 					Particles[i].drawLines(element.getPosition());
 					//Particles[i].applyForce(mouseV);
@@ -216,7 +216,7 @@ angleMode(RADIANS);
 
 pop();
 
-push();
+//push();
 //scale(0.6);
 	for (let i = 0; i< word.length; i++){
 angleMode(DEGREES);
@@ -229,7 +229,7 @@ push();
 pop();
 }
 
-pop();
+//pop();
 
 noFill();
   		objective_2.setPosition(createVector(mouseX,mouseY));
@@ -281,7 +281,7 @@ function hoverOverName() {
 
 
 function mousePressed(){
-	
+
 	newNoiseSeed();
 }
 
@@ -362,8 +362,8 @@ function playPortalAnimation(){
 
 
 if(maxIndexHoverEffect >= 30 && t < 5){
-	animSpeed = map(eas.quadraticIn(constrain(t,1,5)),1,5,0.2,2.5);
-	rotSpeed = map(eas.quadraticIn(map(constrain(t,1,5),1,5,0,1)),0,1,5,22.5);
+	animSpeed = map(eas.quadraticIn(constrain(t,1,5)),1,5,0,2.5);
+	rotSpeed = map(eas.quadraticIn(map(constrain(t,1,5),1,5,0,1)),0,1,0,22.5);
 } else if( t >= 5){
 	animSpeed = lerp(animSpeed, 0.1, map(constrain(t,5,7),5,7,0,1));
 	rotSpeed = lerp(rotSpeed, 0.1, map(constrain(t,5,7),5,7,0,1));
