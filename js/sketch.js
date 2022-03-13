@@ -1,38 +1,28 @@
+// MainPage
 // ------------------------------------------------------------------
 // Object Variables
-let creature_1;
 let dna1;
-
-let objective_1;
-let objective_2;
-
 let Objectives = [];
 let Creatures = [];
 
-
-let p;
-
+// Number of Particles 
 let num = 150;
-let noiseScale = 0.02;
 
-// UI
-var button_1;
-var rect;
-let uxarray = [];
-
-// Logic
-let CreatureCreationPossible = 0;
-
-//
+// Variables for Name Display
 let word = []; 
 let letters = [];
+let dummyCircles = []; 
 
+// Vector Variable - Mouse Position 
+let mouseV;
 
+// Particle Array
 let Particles = [];
 
+// Ease Function Object 
 let eas;
 
-let dummyCircles = []; 
+// Portal Stuff 
 let xoff = 0.0;
 let yoff = 0.0;
 let portalWeightOffsets = [];
@@ -63,198 +53,48 @@ function setup() {
 	createCanvas(windowWidth, windowHeight);
 // Setup Canvas  
  	background (0); 
-angleMode(DEGREES);
+	angleMode(DEGREES);
+	eas = new p5.Ease();
+	setupName();
+	setupParticles();
+	setupPortal();
 
+// Event callback for hovering over Name (not used yet)
+	uxNoFill();
+	uxNoStroke();
+	uxRect(windowWidth/2.5-30, 15, 420, 50).uxEvent('hover', hoverOverName);
 
-eas = new p5.Ease();
-
-//createCreature(createVector(windowWidth/2,windowHeight/2));
-
-// Setup Name 
-
-word[0] = 'J';
-word[1] = 'O';
-word[2] = 'E';
-word[3] = 'L';
-word[4] = 'S';
-word[5] = 'C';
-word[6] = 'H';
-word[7] = 'A';
-word[8] = 'E';
-word[9] = 'F';
-word[10] = 'E';
-word[11] = 'R';
-
-// Init "JLetter" Objects
-for (var i = 0; i< word.length; i++){
-	letters[i] = new JLetter(word[i]);
-	
-	letters[i].setScale(0.6);
-
-	letters[i].setPosition(windowWidth/1.4+59*i,75);
-
-	dummyCircles.push(createVector(windowWidth/2.5+33*i,40));
-}
-
-uxNoFill();
-uxNoStroke();
-
-uxRect(windowWidth/2.5-30, 15, 420, 50).uxEvent('hover', hoverOverName);
-
-
-// Position Kalibration For Better Look 
-letters[3].setOffset(-17,0);
-letters[5].setOffset(-5,0);
-letters[6].setOffset(-15,0);
-letters[7].setOffset(-25,0);
-letters[8].setOffset(-28,0);
-letters[9].setOffset(-40,0);
-letters[10].setOffset(-55,0);
-letters[11].setOffset(-75,0);
-
-
-
-//  Particles
-
-
-	for(let i = 0; i< num;i++){
-	Particles[i] = new Particle();
-	Particles[i].setPosition(createVector(random(windowWidth),random(windowHeight)));
-	if(random(1)>0.5){
-	Particles[i].setNoiseMult(1);
-} else {
-	Particles[i].setNoiseMult(-1);
-
-	}
-}
-
-
-//  DNAs
+//  init DNA (not used yet) // later use: pass into creature/particle classes for individualization of parameters // much later: for creature mating behaviour/evolutionary sim stuff (gene pass functions) 
 	dna1 = new Dna(15);
+  	dna1.generateGenes();
 
-  dna1.generateGenes();
-
-//  Objectives 
+//  Objectives (not used yet) // later use: simple interacteable elements for creatures (static&dynamic)// for example: source of food, gathering places, ..
   	objective_1 = new Objective();
   	objective_2 = new Objective();
   	Objectives.push(objective_1);
   	Objectives.push(objective_2);
-
   	objective_1.setPosition(createVector(200,200));
-  	
 
-//  Creature 
-  	// creature_1 = new Creature();
-  	// Creatures.push(creature_1);
-
-  	// creature_1.setup(windowWidth/2,windowHeight/2);
-
-// Portal 
-for (var i = 0; i < portalElements; i++) {
-	portalWeightOffsets[i] = random(2.0);
-	portalAngleOffsets[i] = random(-2,5);
-
-
-
-
-}
-
+// invisible Event Callback Areas // used for responsive fx inside Portal
 	uxCircle(windowWidth/2,windowHeight/2,350,350).uxEvent('hover', unHoverPortal);
-	uxCircle(windowWidth/2,windowHeight/2,60,60).uxEvent('hover', hoverPortal);
-			uxNoFill();
-	
+	uxCircle(windowWidth/2,windowHeight/2,60,60).uxEvent('hover', hoverPortal);	
 	uxCircle(windowWidth/2,windowHeight/2,80,80).uxEvent('hover', unHoverPortalButton);
-
 	uxCircle(windowWidth/2,windowHeight/2,15,15).uxEvent('hover', hoverPortalButton);
 	uxCircle(windowWidth/2,windowHeight/2,30,30).uxEvent('click', portalButton);
-
-
 }
+
 // ------------------------------------------------------------------
 // 
 function draw() {
-
 	background(0);
-	stroke(255);
- 	let mouseV = createVector(mouseX,mouseY);
+ 	mouseV = createVector(mouseX,mouseY);
 	updatePortal();
-	//displayPortal();
-// if (frameCount*10 <= 1000){
-// scale(eas.bounceIn(frameCount*10/1000));
-// } else {
-// 	scale(1); 
-// }
-
-push();
-angleMode(RADIANS);
-
-	for(let i = 0; i<num;i++){
-		stroke(650-dist(Particles[i].getPosition().x,Particles[i].getPosition().y,mouseV.x,mouseV.y));
-		Particles[i].update(Particles);
-		if(!onScreen(Particles[i].getPosition())){
-		//
-	  Particles[i].setNoiseMult(Particles[i].getNoiseMult()*1);		
-		
-		Particles[i].setPosition(createVector(random(windowWidth),random(windowHeight)));		
-		}
-		if(mouseV.dist(Particles[i].getPosition()) < 120){
-			Particles.forEach(element =>{
-				//// - strange error here:
-      	// let dis = Particles[i].getPosition().dist(element.getPosition()); 
-      	//// - this works somehow:
-      		let dis = dist(Particles[i].getPosition().x,Particles[i].getPosition().y,element.getPosition().x,element.getPosition().y); 
-      		if(dis>20 && dis<105) {      			
-					stroke(225-mouseV.dist(Particles[i].getPosition()));
-					Particles[i].drawLines(element.getPosition());
-					//Particles[i].applyForce(mouseV);
-      			} 
-			}); // 2. forEach 		
-		} // 1. if 
-
-}
-
-
-pop();
-
-//push();
-//scale(0.6);
-	for (let i = 0; i< word.length; i++){
-angleMode(DEGREES);
-//circle(dummyCircles[i].x,dummyCircles[i].y,30);
-push();
-	
-	letters[i].setStrokeColor(300-constrain(dummyCircles[i].dist(mouseV),0,300)+125);
-	letters[i].checkDistance2Actor(mouseX,mouseY);
-	letters[i].visualize();
-pop();
-}
-
-//pop();
-
-noFill();
-  		objective_2.setPosition(createVector(mouseX,mouseY));
-
-  	//objective_1.visualize();
-
-  	for(let i = 0; i<Creatures.length;i++){
-  		Creatures[i].update();
-  		Creatures[i].computeTarget(Particles);
-  		Creatures[i].aimTarget();
-  		for (let j = 0; j < Particles.length; j++) {
-  		if(Creatures[i].getPosition().dist(Particles[j].getPosition()) < 75){
-  			Particles[j].setIsTarget(1);
-  		} else {
-  			Particles[j].setIsTarget(0);
-  			}
-  		}
-  	} 
+	updateName();
+	updateParticles();
+	updateCreatures(); // not working as intented yet // creatures targets closest particle but immediately target next one, therefore steering behaviour doesn't work // Target Functions net Rework // unintented Destruction of Particles after targeted by creature ( tho there is no particle.destroy function yet)
 
 
 
-	
-
-  	//dna1.visualize();
-   //text(Objectives[1].getPosition().x, width/2, height/2);
 }
 
 // ------------------------------------------------------------------
@@ -264,6 +104,95 @@ function windowResized() {
 	resizeCanvas(windowWidth, windowHeight);
 }
 
+function mousePressed(){
+	newNoiseSeed();
+	createParticle();		
+}
+
+function setupName(){
+	word[0] = 'J';
+	word[1] = 'O';
+	word[2] = 'E';
+	word[3] = 'L';
+	word[4] = 'S';
+	word[5] = 'C';
+	word[6] = 'H';
+	word[7] = 'A';
+	word[8] = 'E';
+	word[9] = 'F';
+	word[10] = 'E';
+	word[11] = 'R';
+
+// Init "JLetter" Objects
+	for (var i = 0; i< word.length; i++){
+		letters[i] = new JLetter(word[i]);	
+		letters[i].setScale(0.6);
+		letters[i].setPosition(windowWidth/1.4+59*i,75);
+		dummyCircles.push(createVector(windowWidth/2.5+33*i,40)); // Helping Objects for properly working distance function 
+	}
+
+// Position Kalibration For Better Look 
+	letters[3].setOffset(-17,0);
+	letters[5].setOffset(-5,0);
+	letters[6].setOffset(-15,0);
+	letters[7].setOffset(-25,0);
+	letters[8].setOffset(-28,0);
+	letters[9].setOffset(-40,0);
+	letters[10].setOffset(-55,0);
+	letters[11].setOffset(-75,0);
+}
+
+function updateName(){
+ 		for (let i = 0; i< word.length; i++){
+		angleMode(DEGREES);
+		push();	
+			letters[i].setStrokeColor(300-constrain(dummyCircles[i].dist(mouseV),0,300)+125);
+			letters[i].checkDistance2Actor(mouseX,mouseY);
+			letters[i].visualize();
+		pop();
+	}
+}
+
+function createParticle(){
+		let newParticle = new Particle();
+		newParticle.setPosition(mouseV.add(random(-5,5),random(-5,5)));
+		newParticle.setNoiseMult(random(-1,1));
+		Particles.push(newParticle);	
+}
+
+function setupParticles(){
+	//  init Particles 
+	for(let i = 0; i< num;i++){
+		Particles[i] = new Particle();
+		Particles[i].setPosition(createVector(random(windowWidth),random(windowHeight)));
+		if(random(1)>0.5){
+			Particles[i].setNoiseMult(1);
+		} else {
+			Particles[i].setNoiseMult(-1);
+		}
+	}
+}
+
+function updateParticles(){
+	angleMode(RADIANS);
+	for(let i = 0; i<Particles.length;i++){
+		stroke(650-dist(Particles[i].getPosition().x,Particles[i].getPosition().y,mouseV.x,mouseV.y));
+		Particles[i].update(Particles);
+		if(!onScreen(Particles[i].getPosition())){ 
+			Particles[i].setNoiseMult(Particles[i].getNoiseMult()*-1);		
+			Particles[i].setPosition(createVector(random(windowWidth),random(windowHeight)));		
+		}
+		if(mouseV.dist(Particles[i].getPosition()) < 120){
+			Particles.forEach(element =>{
+			let dis = Particles[i].getPosition().dist(element.getPosition()); 
+      		if(dis>20 && dis<105) {      			
+					stroke(225-mouseV.dist(Particles[i].getPosition()));
+					Particles[i].drawLines(element.getPosition()); // ToDo - Limit Number Of Connections per Particle 4 Performance
+      			} 
+			})
+		} 
+	}
+}
 
 function createCreature(_Pos) {
 	let newCreature = new Creature();
@@ -271,38 +200,59 @@ function createCreature(_Pos) {
 	Creatures.push(newCreature);	
 }
 
+function updateCreatures(){
+	noFill();
+  	stroke(255);
+	angleMode(DEGREES);
+
+  	for(let i = 0; i<Creatures.length;i++){
+  		Creatures[i].computeTarget(Particles); 
+  		Creatures[i].aimTarget(); // not sure why Particles get destroyed on aim // no such function as particle.destroy() yet
+  		Creatures[i].update();
+  		for (let j = 0; j < Particles.length; j++) {
+  			if(Creatures[i].getPosition().dist(Particles[j].getPosition()) < 75){ // && no Particle targeted atm 
+  			Particles[j].setIsTarget(1);
+  			} else {
+  			Particles[j].setIsTarget(0);
+  			}
+  		}
+  	} // As Mentioned Before, This and the corresponding Parts in the classes need Rework // multiple things in Targetting aren't working properly 
+}
 
 function onScreen(v){
 	return v.x >= 0 && v.x <= windowWidth && v.y >= 0 && v.y <= windowHeight;
 }
+
 function hoverOverName() {
 	
 }
 
-
-function mousePressed(){
-
-	newNoiseSeed();
-}
-
 function newNoiseSeed(){
-		if (!isLerpingToNewNoiseSeed) {
-	sampleNoise(); // n -> sampledN
-	isLerpingToNewNoiseSeed = true;
-	lerpAlpha = 0;
-	noiseSeed(random(5000)); // n = newValue
+	if (!isLerpingToNewNoiseSeed) {
+		sampleNoise(); // n -> sampledN
+		isLerpingToNewNoiseSeed = true;
+		lerpAlpha = 0;
+		noiseSeed(random(9999)); // n = newValue
+	}
 }
-
-}
-
-//Portal Stuff
 
 function sampleNoise(){
 	nSampled = n;
 }
 
-function lerpToNewNoiseSeed(_speed){
- lerpAlpha += 0.01*_speed;
+function lerpToNewNoiseSeed(_speed){ // gets called in PortalDisplay()
+	lerpAlpha += 0.01*_speed;
+}
+
+
+// Portal Stuff // still very messy // later: moving into Portal Class
+
+function setupPortal(){
+	// Portal // init of Arrays of Offsets for visual Variation 
+	for (var i = 0; i < portalElements; i++) {
+		portalWeightOffsets[i] = random(2.0);
+		portalAngleOffsets[i] = random(-2,5);
+	}
 }
 
 function hoverPortalButton(){
@@ -332,13 +282,7 @@ function startPortalAnimation(){
 function updatePortal(){
 	if(isPortalActive){
 		displayPortal();
-
-
-		
 		//rotSpeed = lerp(0,5,portalHoverAlpha);
-
-	
-
 		if(isPortalAnimPlaying){
 		playPortalAnimation();
 		} else {
@@ -422,7 +366,7 @@ fill(0);
 
 	//scale(map(sin(frameCount*animSpeed*1.2%360),-1,1,0.75,1));
 
-	  circle(windowWidth/2,windowHeight/2,195,195);
+	  circle(windowWidth/2,windowHeight/2,195);
 
 pop(); 
 		push();
@@ -435,7 +379,7 @@ pop();
 	noStroke();
 	for (var i = 0; i < 20; i++) {
 		fill(135-i*9);
-	  circle(0,0,195-i*8,195-i*8);
+	  circle(0,0,195-i*8);
 
 	  }
 	pop();
@@ -507,7 +451,7 @@ pop();
 
 	fill(10,10,midButtonFill);
 	noStroke();
-	circle(0,0,15,15)
+	circle(0,0,15);
 	pop();
 }
 
